@@ -1,10 +1,10 @@
-groq>=0.9.0
-python-dotenv>=1.1.0
+# requirements.txt — IndoIoT LLM (inference + UI)
 transformers>=4.40.0
 peft>=0.10.0
-trl>=0.8.0
-datasets>=2.19.0
-bitsandbytes>=0.43.0
 accelerate>=0.29.0
 torch>=2.6.0
-scipy>=1.13.0
+gradio>=4.0.0
+huggingface-hub>=0.20.0
+python-dotenv>=1.1.0
+sentencepiece>=0.1.99
+protobuf>=3.20.0
