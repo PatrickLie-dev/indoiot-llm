@@ -1,10 +1,10 @@
 # requirements.txt — IndoIoT LLM (inference + UI)
-transformers>=4.40.0
-peft>=0.10.0
+transformers==4.47.0
+peft==0.14.0
 accelerate>=0.29.0
 torch>=2.6.0
-gradio>=5.0.0
-huggingface-hub>=0.20.0
+gradio>=5.0.0,<6.0.0
+tokenizers==0.21.0
 python-dotenv>=1.1.0
 sentencepiece>=0.1.99
 protobuf>=3.20.0

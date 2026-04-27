@@ -4,6 +4,17 @@
 import os
 import logging
 import torch
+
+# gradio_client bug: _json_schema_to_python_type doesn't handle boolean JSON schemas
+# (e.g. additionalProperties: true), causing TypeError on API info generation.
+import gradio_client.utils as _gcu
+_orig_j2p = _gcu._json_schema_to_python_type
+def _patched_j2p(schema, defs):
+    if isinstance(schema, bool):
+        return "any"
+    return _orig_j2p(schema, defs)
+_gcu._json_schema_to_python_type = _patched_j2p
+
 import gradio as gr
 from dotenv import load_dotenv
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -147,29 +158,47 @@ tokenizer = None
 # Gradio UI
 # ---------------------------------------------------------------------------
 
-def chat_fn(message: str, history: list) -> str:
-    return generate_response(message)
+EXAMPLES = [
+    "Bagaimana cara menghubungkan ESP32 ke broker MQTT?",
+    "Apa perbedaan antara QoS 0, 1, dan 2 dalam protokol MQTT?",
+    "Bagaimana cara membaca sensor DHT22 dengan ESP32?",
+    "Jelaskan perbedaan antara HTTP dan MQTT untuk aplikasi IoT.",
+    "Apa yang harus dilakukan jika ESP32 terus restart karena watchdog timer?",
+]
+
+def respond(message: str, chat_history: list):
+    if not message.strip():
+        return "", chat_history
+    response = generate_response(message)
+    chat_history.append({"role": "user", "content": message})
+    chat_history.append({"role": "assistant", "content": response})
+    return "", chat_history
 
 # Initialize model SEBELUM launch Gradio
 logger.info("Initializing IndoIoT LLM...")
 model, tokenizer = load_model()
 
-demo = gr.ChatInterface(
-    fn=chat_fn,
-    title="🌐 IndoIoT LLM — Asisten IoT Berbahasa Indonesia",
-    description=(
+with gr.Blocks(title="IndoIoT LLM") as demo:
+    gr.Markdown(
+        "# 🌐 IndoIoT LLM — Asisten IoT Berbahasa Indonesia\n"
         "**Fine-tuned Qwen2.5-3B** dengan QLoRA pada 760 samples IoT Bahasa Indonesia.  \n"
         "Model: [Pat-L/indoiot-qwen2.5-lora](https://huggingface.co/Pat-L/indoiot-qwen2.5-lora)"
-    ),
-    examples=[
-        "Bagaimana cara menghubungkan ESP32 ke broker MQTT?",
-        "Apa perbedaan antara QoS 0, 1, dan 2 dalam protokol MQTT?",
-        "Bagaimana cara membaca sensor DHT22 dengan ESP32?",
-        "Jelaskan perbedaan antara HTTP dan MQTT untuk aplikasi IoT.",
-        "Apa yang harus dilakukan jika ESP32 terus restart karena watchdog timer?",
-    ],
-)
+    )
+    chatbot = gr.Chatbot(height=400, type="messages")
+    with gr.Row():
+        msg = gr.Textbox(
+            placeholder="Ketik pertanyaan IoT Anda di sini...",
+            label="",
+            show_label=False,
+            scale=4,
+        )
+        submit_btn = gr.Button("Kirim", scale=1, variant="primary")
+    clear_btn = gr.Button("Hapus Riwayat")
+    gr.Examples(examples=EXAMPLES, inputs=msg)
+
+    msg.submit(respond, [msg, chatbot], [msg, chatbot])
+    submit_btn.click(respond, [msg, chatbot], [msg, chatbot])
+    clear_btn.click(lambda: [], outputs=chatbot)
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 7860))
     demo.launch(server_name="0.0.0.0", server_port=7860)
