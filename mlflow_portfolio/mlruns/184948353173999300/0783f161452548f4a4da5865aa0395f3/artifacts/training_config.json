@@ -1,0 +1,25 @@
+{
+  "base_model": "Qwen/Qwen2.5-3B",
+  "adapter_type": "QLoRA",
+  "quantization": "4bit",
+  "lora_r": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "target_modules": [
+    "q_proj",
+    "v_proj"
+  ],
+  "num_train_epochs": 3,
+  "per_device_train_batch_size": 4,
+  "gradient_accumulation_steps": 4,
+  "learning_rate": 0.0002,
+  "lr_scheduler": "cosine",
+  "warmup_ratio": 0.03,
+  "max_seq_length": 512,
+  "fp16": true,
+  "dataset_size": 760,
+  "dataset_language": "Indonesian",
+  "dataset_domain": "IoT",
+  "train_split": 0.9,
+  "eval_split": 0.1
+}

@@ -1,0 +1,8 @@
+artifact_location: file:C:/Users/ASUS/Projects/indoiot-llm/mlflow_portfolio/mlruns/184948353173999300
+creation_time: 1777306543751
+experiment_id: '184948353173999300'
+last_update_time: 1777306543751
+lifecycle_stage: active
+name: IndoIoT-LLM-QLoRA
+trace_location: null
+workspace: default
