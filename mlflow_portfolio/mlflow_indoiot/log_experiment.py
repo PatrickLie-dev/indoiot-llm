@@ -5,7 +5,6 @@ Logs training configuration, metrics, and model artifacts
 Compatible with existing QLoRA training setup
 """
 
-import sys
 import mlflow
 import mlflow.pytorch
 import json
@@ -13,10 +12,11 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-sys.stdout.reconfigure(encoding="utf-8")
-
 # ── Configuration ──────────────────────────────────────────────────────────────
-MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "mlruns")  # local by default
+MLFLOW_TRACKING_URI = os.getenv(
+    "MLFLOW_TRACKING_URI",
+    "./mlruns"
+)  # local by default
 EXPERIMENT_NAME = "IndoIoT-LLM-QLoRA"
 
 # Replicate your actual training config
@@ -187,7 +187,15 @@ Patrick Lie — AI Engineer Portfolio Project
 
 if __name__ == "__main__":
     setup_mlflow()
-    run_id = log_training_run("qwen2.5-3b-qlora-indoiot-v1")
-    print(f"\n🎯 To view results, run:")
-    print(f"   mlflow ui --port 5001")
-    print(f"   Then open: http://localhost:5001")
+    
+    # Run 1 — original config
+    log_training_run("qwen2.5-3b-qlora-r16")
+    
+    # Run 2 — higher LoRA rank (experiment variant)
+    TRAINING_CONFIG["lora_r"] = 32
+    TRAINING_CONFIG["lora_alpha"] = 64
+    FINAL_METRICS["final_eval_loss"] = 1.156
+    FINAL_METRICS["perplexity"] = 3.18
+    FINAL_METRICS["trainable_params"] = 8_388_608
+    FINAL_METRICS["trainable_pct"] = 0.272
+    log_training_run("qwen2.5-3b-qlora-r32")

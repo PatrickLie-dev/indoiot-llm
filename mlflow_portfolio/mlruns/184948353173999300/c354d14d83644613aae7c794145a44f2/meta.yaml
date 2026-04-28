@@ -1,0 +1,14 @@
+artifact_uri: file:C:/Users/ASUS/Projects/indoiot-llm/mlflow_portfolio/mlruns/184948353173999300/c354d14d83644613aae7c794145a44f2/artifacts
+end_time: 1777366875820
+entry_point_name: ''
+experiment_id: '184948353173999300'
+lifecycle_stage: active
+run_id: c354d14d83644613aae7c794145a44f2
+run_name: qwen2.5-3b-qlora-r32
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1777366875733
+status: 3
+tags: []
+user_id: ASUS
