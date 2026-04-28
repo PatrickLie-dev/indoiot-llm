@@ -340,7 +340,6 @@ mlflow ui --backend-store-uri ./mlflow_portfolio/mlruns
 
 ## Screenshots
 
-> *(Tambahkan screenshot setelah deployment)*
 
 **Gradio Chat Interface:**
 
